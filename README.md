@@ -7,6 +7,8 @@ beautiful landscapes, with optional movie and show recommendations. No ads, no c
 
 Made by Emmanuel Pozo ([@princepozo](https://x.com/princepozo)).
 
+![Zen TV's home screen: the app row over a scene from Lawrence of Arabia](docs/screenshots/home.jpg)
+
 > **Tried on one TV only.** I built this for my own TV, a 2018 Samsung (UN65NU8000) running Tizen 4.0,
 > and that's the only one it has been tested on. Other Samsung TVs running Tizen will probably work, but
 > I can't promise it. It installs like any developer app (no rooting or hacking), and you can remove it
@@ -21,6 +23,40 @@ Made by Emmanuel Pozo ([@princepozo](https://x.com/princepozo)).
 - **Five themes**: Glass, Midnight, Paper, Cinema and Nature
 - **Controls**: switch the TV's input or open its settings
 - Opens when the TV turns on, and comes back when you leave an app (optional)
+
+## A look around
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/trending.jpg" alt="The Trending row, with the focused title as the background"></td>
+    <td width="50%"><img src="docs/screenshots/detail.jpg" alt="A title's actions: open it in its app, or save it to Watch Later"></td>
+  </tr>
+  <tr>
+    <td><b>Trending</b> on your apps, with Classics and Watch Later below</td>
+    <td>Open a title in its app, or save it for later</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/controls.jpg" alt="The Controls menu: the TV's inputs and TV settings"></td>
+    <td><img src="docs/screenshots/simple.jpg" alt="Recommendations off: just the apps over a landscape"></td>
+  </tr>
+  <tr>
+    <td><b>Controls</b>: switch inputs or open the TV's settings</td>
+    <td>Recommendations off: just your apps over landscapes</td>
+  </tr>
+</table>
+
+**Themes.** Glass (above), plus Midnight, Paper, Cinema and Nature:
+
+![The Midnight, Paper, Cinema and Nature themes](docs/screenshots/themes.jpg)
+
+**The installer** runs in your browser and walks you through everything:
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/installer-icon.jpg" alt="The installer's Name and icon step"></td>
+    <td width="50%"><img src="docs/screenshots/installer-theme.jpg" alt="The installer's Theme step, with live previews"></td>
+  </tr>
+</table>
 
 ## What you need
 

@@ -86,7 +86,7 @@
   /* Status bar: a tvOS-style glass tab bar, centred at the top. The "selected" white
      segment holds the time; date and weather sit in the plain segments. */
   .statusbar {
-    position: absolute; top: 44px; left: 50%;
+    position: absolute; top: 54px; left: 50%;
     -webkit-transform: translateX(-50%); transform: translateX(-50%);
     display: flex; align-items: center;
     padding: 6px; border-radius: 999px; white-space: nowrap;
@@ -96,20 +96,19 @@
     font-size: 26px; font-weight: 500; line-height: 1.15; color: var(--fg);
     text-shadow: 0 1px 6px rgba(0,0,0,0.25);
   }
-  .seg-on {
-    color: #111; background: #fff; text-shadow: none; font-weight: 600;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+  .seg-on { /* a quiet tint: the solid fill is kept for focus alone */
+    color: var(--fg); background: rgba(255,255,255,0.2); font-weight: 600;
     font-variant-numeric: tabular-nums; letter-spacing: 0.01em;
   }
   .seg-wx { display: none; align-items: center; }
   .seg-wx.ready { display: flex; }
   .seg-wx svg { width: 34px; height: 34px; margin-right: 10px; }
-  .seg-wx .hilo { margin-left: 12px; font-weight: 400; color: var(--fg-dim); }
+  .seg-wx .hilo { margin-left: 14px; font-size: 21px; font-weight: 400; color: var(--fg-faint); }
 
   /* Profile pill, top left: like the profile switcher in tvOS Control Center. Same height and
      top as the status bar (6 + 54 + 6 = 66px) so the two line up. */
   .profile {
-    position: absolute; top: 44px; left: var(--edge);
+    position: absolute; top: 54px; left: var(--edge);
     display: flex; align-items: center;
     padding: 6px 28px 6px 6px; border-radius: 999px;
   }
@@ -135,7 +134,7 @@
 
   /* Profile menu: drops from the pill */
   .profile-menu {
-    position: absolute; top: 128px; left: var(--edge); z-index: 6; min-width: 300px;
+    position: absolute; top: 138px; left: var(--edge); z-index: 6; min-width: 300px;
     padding: 10px; border-radius: 28px; display: none;
   }
   .profiles-open .profile-menu { display: block; }
@@ -149,7 +148,7 @@
 
   /* Search: top right, same height as the pill */
   .search-btn {
-    position: absolute; top: 44px; right: var(--edge); z-index: 4;
+    position: absolute; top: 54px; right: var(--edge); z-index: 4;
     width: 66px; height: 66px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
   }
@@ -159,14 +158,14 @@
   /* Controls: left of Search. One button for the TV's inputs and Samsung's Settings; its name shows
      below it while focused */
   .controls-btn {
-    position: absolute; top: 44px; right: calc(var(--edge) + 84px); z-index: 4;
+    position: absolute; top: 54px; right: calc(var(--edge) + 84px); z-index: 4;
     width: 66px; height: 66px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
   }
   .controls-btn svg { width: 30px; height: 30px; }
   .controls-btn path, .controls-btn circle { stroke: currentColor; }
   .controls-label {
-    position: absolute; top: 122px; right: calc(var(--edge) + 64px); z-index: 4; width: 106px;
+    position: absolute; top: 132px; right: calc(var(--edge) + 64px); z-index: 4; width: 106px;
     text-align: center; font-size: 20px; font-weight: 600; text-shadow: 0 1px 6px rgba(0,0,0,0.5);
     opacity: 0; transition: opacity 0.15s ease;
   }
@@ -174,7 +173,7 @@
 
   /* Controls menu: drops from the button, the same glass as the profile menu */
   .controls-menu {
-    position: absolute; top: 128px; right: var(--edge); z-index: 6; width: 540px;
+    position: absolute; top: 138px; right: var(--edge); z-index: 6; width: 540px;
     box-sizing: border-box; padding: 12px; border-radius: 32px; display: none;
   }
   .controls-open .controls-menu { display: block; }
@@ -421,23 +420,29 @@
 
   /* Hero: what the background is, overlaid like the tvOS Top Shelf. A small label (MOVIE,
      TV SERIES, TRENDING NOW, PHOTO), the title large, then year and credit. */
+  /* Anchored at the bottom, 70px above the app row: a long title or description grows upward into the
+     picture, never down into the tiles */
   .hero {
-    position: absolute; left: var(--edge); top: 330px; max-width: 1300px;
+    position: absolute; left: var(--edge); bottom: 400px; max-width: 1300px;
     text-shadow: 0 2px 18px rgba(0,0,0,0.45);
     transition: opacity 0.8s ease;
   }
+  /* On a title row, clear of the row's label (75px above its cards) */
+  .zone-trend .hero, .zone-classic .hero, .zone-later .hero { bottom: 445px; }
   .hero-eyebrow {
     font-size: 22px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--fg-dim);
   }
   .hero-title {
-    margin-top: 8px;
+    margin-top: 8px; max-width: 1150px;
     font-size: 80px; font-weight: 300; letter-spacing: -0.015em; line-height: 1.02;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
   }
   .hero-sub { margin-top: 14px; font-size: 26px; font-weight: 400; color: var(--fg-dim); }
   .hero-desc {
-    margin-top: 12px; max-width: 900px;
-    font-size: 23px; font-weight: 400; line-height: 1.4; color: var(--fg-dim);
+    margin-top: 12px; max-width: 820px;
+    font-size: 26px; font-weight: 400; line-height: 1.42; color: var(--fg-dim);
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
   }
   .hero-desc:empty { display: none; }
   .credit {
@@ -447,8 +452,8 @@
   /* Soft shade behind the hero text only (not the whole left half), so it reads on bright
      backgrounds without greying out the image */
   .scrim-left {
-    position: absolute; top: 240px; left: 0; width: 1000px; height: 520px; z-index: 3;
-    background: radial-gradient(ellipse 100% 60% at 0% 50%, rgba(0,0,0,0.42), rgba(0,0,0,0) 100%);
+    position: absolute; top: 200px; left: 0; width: 1300px; height: 600px; z-index: 3;
+    background: radial-gradient(ellipse 90% 62% at 0% 52%, rgba(0,0,0,0.58), rgba(0,0,0,0.26) 55%, rgba(0,0,0,0) 100%);
   }
 
   /* Hero "+ Watch Later" button: only for movie/TV backgrounds; Up from the apps focuses it */
@@ -490,12 +495,12 @@
   .shelf, .title-shelf { transition: opacity 0.3s ease; }
   .title-shelf { position: absolute; left: var(--edge); right: 0; }
   /* label (41px) + gap (34px) above the cards: shelves start 75px above the 750px card line */
-  #trend-shelf { top: 1013px; }
-  #classic-shelf { top: 1393px; }
-  #later-shelf { top: 1773px; }
-  .zone-trend .rows { transform: translateY(-338px); }
-  .zone-classic .rows { transform: translateY(-718px); }
-  .zone-later .rows { transform: translateY(-1098px); }
+  #trend-shelf { top: 1033px; }
+  #classic-shelf { top: 1413px; }
+  #later-shelf { top: 1793px; }
+  .zone-trend .rows { transform: translateY(-358px); }
+  .zone-classic .rows { transform: translateY(-738px); }
+  .zone-later .rows { transform: translateY(-1118px); }
   .zone-trend .shelf,
   .zone-classic .shelf, .zone-classic #trend-shelf,
   .zone-later .shelf, .zone-later #trend-shelf, .zone-later #classic-shelf { opacity: 0; }
@@ -560,18 +565,22 @@
   @font-face { font-family: "Fraunces"; font-weight: 400; font-display: swap; src: url(fonts/fraunces-400.woff2) format("woff2"); }
   @font-face { font-family: "Playfair Display"; font-style: italic; font-weight: 400; font-display: swap; src: url(fonts/playfair-400-italic.woff2) format("woff2"); }
 
-  /* Midnight: deep navy, the photo dimmed into it, violet glow on focus */
+  /* Midnight: deep navy. The photo keeps its contrast at the centre and sinks into midnight at the
+     edges (a grade, not a dim); violet glow on focus */
   .theme-midnight { --fg: #eceaff; --fg-dim: #b9b6e8; --fg-faint: rgba(236,234,255,0.5); }
   .theme-midnight #stage, .theme-midnight #bg-fallback { background: #07081a; }
-  .theme-midnight .photo.visible { opacity: 0.55; }
-  .theme-midnight .scrim-top { background: linear-gradient(to bottom, rgba(7,8,26,0.55), rgba(7,8,26,0)); }
-  .theme-midnight .scrim-bottom { background: linear-gradient(to top, rgba(7,8,26,0.88), rgba(7,8,26,0.3) 55%, rgba(7,8,26,0)); }
-  .theme-midnight .scrim-left { background: radial-gradient(ellipse 100% 60% at 0% 50%, rgba(7,8,26,0.6), rgba(7,8,26,0) 100%); }
+  .theme-midnight .photo.visible { opacity: 0.86; }
+  .theme-midnight .scrim-top { height: 240px; background: linear-gradient(to bottom, rgba(7,8,26,0.8), rgba(7,8,26,0)); }
+  .theme-midnight .scrim-bottom { height: 520px; background: linear-gradient(to top, rgba(7,8,26,0.95), rgba(7,8,26,0.45) 55%, rgba(7,8,26,0)); }
+  .theme-midnight .scrim-left {
+    top: 0; height: 100%; width: 1500px;
+    background: linear-gradient(to right, rgba(7,8,26,0.9) 0%, rgba(7,8,26,0.62) 36%, rgba(7,8,26,0) 78%);
+  }
+  .theme-midnight .seg-on { background: rgba(157,123,255,0.24); color: #fff; }
   .theme-midnight .glass {
     background: rgba(18,20,52,0.82); border: 1px solid rgba(150,140,255,0.28);
     box-shadow: 0 12px 30px rgba(0,0,0,0.35);
   }
-  .theme-midnight .seg-on,
   .theme-midnight .profile.focused, .theme-midnight .search-btn.focused, .theme-midnight .controls-btn.focused,
   .theme-midnight .hero-btn.focused, .theme-midnight .act.focused, .theme-midnight .voice-type.focused,
   .theme-midnight .profile-item.focused, .theme-midnight .controls-item.focused, .theme-midnight .key.focused,
@@ -589,31 +598,31 @@
   .theme-midnight .browse-grid .tile, .theme-midnight .browse-grid .lift { background-color: #14162e; }
   .theme-midnight .search-ui, .theme-midnight .browse-ui { background: rgba(7,8,26,0.84); }
 
-  /* Paper: warm paper, ink-dark text and focus, the photo washed in from the right, a serif title */
+  /* Paper: warm, softly dimmed paper (easy on the eyes in a dark room), ink-dark text and focus, the photo
+     meeting the page at a crisp edge, a serif title */
   .theme-paper { --fg: #1d1b16; --fg-dim: #5e594f; --fg-faint: rgba(29,27,22,0.45); }
-  .theme-paper #stage, .theme-paper #bg-fallback { background: #f3efe6; }
+  .theme-paper #stage, .theme-paper #bg-fallback { background: #ece5d7; }
   .theme-paper .seg, .theme-paper .profile-name, .theme-paper .controls-label, .theme-paper .controls-head,
   .theme-paper .controls-item, .theme-paper .more-label, .theme-paper .name, .theme-paper .hero,
   .theme-paper .row-label { text-shadow: none; }
-  .theme-paper .scrim-top { background: linear-gradient(to bottom, rgba(243,239,230,0.7), rgba(243,239,230,0)); }
-  .theme-paper .scrim-bottom { background: linear-gradient(to top, #f3efe6 0%, rgba(243,239,230,0.9) 50%, rgba(243,239,230,0)); }
+  .theme-paper .scrim-top { background: linear-gradient(to bottom, rgba(236,229,215,0.7), rgba(236,229,215,0)); }
+  .theme-paper .scrim-bottom { background: linear-gradient(to top, #ece5d7 0%, rgba(236,229,215,0.9) 50%, rgba(236,229,215,0)); }
   .theme-paper .scrim-left {
     top: 0; height: 100%; width: 1500px;
-    background: linear-gradient(to right, #f3efe6 0%, rgba(243,239,230,0.94) 46%, rgba(243,239,230,0) 84%);
+    background: linear-gradient(to right, #ece5d7 0%, #ece5d7 50%, rgba(236,229,215,0.9) 54%, rgba(236,229,215,0) 64%);
   }
   .theme-paper .glass {
     background: #fff; border: 1px solid #e2dccd; box-shadow: 0 4px 14px rgba(60,48,30,0.10);
   }
-  .theme-paper .seg-on,
   .theme-paper .profile.focused, .theme-paper .search-btn.focused, .theme-paper .controls-btn.focused,
   .theme-paper .hero-btn.focused, .theme-paper .act.focused, .theme-paper .voice-type.focused,
   .theme-paper .profile-item.focused, .theme-paper .controls-item.focused, .theme-paper .key.focused,
   .theme-paper .more-card.focused .more-circle, .theme-paper .idle .voice-mic.focused,
   .theme-paper .error .voice-mic.focused {
-    background: #1d1b16; color: #f3efe6;
+    background: #1d1b16; color: #ece5d7;
   }
   .theme-paper .controls-item .sub { color: #5e594f; }
-  .theme-paper .controls-item.focused .sub { color: rgba(243,239,230,0.75); }
+  .theme-paper .controls-item.focused .sub { color: rgba(236,229,215,0.75); }
   .theme-paper .controls-rule { background: rgba(29,27,22,0.12); }
   .theme-paper .seg-wx path[fill="#fff"], .theme-paper .seg-wx path[fill="#E6E9EF"],
   .theme-paper .seg-wx path[fill="#C9CED8"] { fill: #cfc8b8; }
@@ -622,30 +631,33 @@
   .theme-paper .seg-wx g[stroke="#C7CCD6"] { stroke: #b5ad9c; } /* fog */
   .theme-paper .controls-head { color: #8a5a2b; }
   .theme-paper .controls-label {
-    padding: 2px 0; border-radius: 999px; background: rgba(243,239,230,0.9); /* readable over any photo */
+    padding: 2px 0; border-radius: 999px; background: rgba(236,229,215,0.9); /* readable over any photo */
   }
   .theme-paper .hero-eyebrow { color: #8a5a2b; }
-  .theme-paper .hero-title { font-family: "Fraunces", Georgia, serif; font-weight: 400; letter-spacing: -0.01em; }
-  .theme-paper .lift, .theme-paper .title-row .lift { box-shadow: 0 4px 14px rgba(60,48,30,0.14); }
+  .theme-paper .hero-title { font-family: "Fraunces", Georgia, serif; font-weight: 400; letter-spacing: -0.01em; max-width: 860px; }
+  .theme-paper .lift, .theme-paper .title-row .lift { box-shadow: 0 0 0 1px #d8cfbd, 0 4px 14px rgba(60,48,30,0.12); }
   .theme-paper .cell.focused .lift::before { box-shadow: 0 0 0 3px #1d1b16, 0 18px 34px rgba(60,48,30,0.22); }
   .theme-paper .lift::after { border-color: #1d1b16; }
   .theme-paper .tile.app-tile { background-color: #fff; }
   .theme-paper .poster-title { color: #fff; }
   .theme-paper .credit { color: rgba(29,27,22,0.4); }
   .theme-paper .cell.empty .tile { background: rgba(255,255,255,0.75); }
-  .theme-paper .search-ui, .theme-paper .browse-ui { background: rgba(243,239,230,0.95); }
+  .theme-paper .search-ui, .theme-paper .browse-ui { background: rgba(236,229,215,0.95); }
   .theme-paper .key, .theme-paper .voice-mic { background: rgba(29,27,22,0.07); color: #1d1b16; }
   .theme-paper .listening .voice-mic { background: linear-gradient(145deg, #8e8cf6 0%, #5e5ce6 45%, #bf5af2 100%); color: #fff; }
   .theme-paper .more-card .more-label { color: #1d1b16; }
+  .theme-paper .seg-on { background: rgba(29,27,22,0.08); color: #1d1b16; }
 
   /* Cinema: black, a letterbox bar across the top, gold accents, an italic serif title */
   .theme-cinema { --fg: #f4efe4; --fg-dim: #c9c1b2; --fg-faint: rgba(244,239,228,0.45); }
   /* square-ish movie cards only: app icons come pre-shaped with 20px corners */
   .theme-cinema .title-row, .theme-cinema .browse-grid { --tile-r: 6px; }
   .theme-cinema #stage, .theme-cinema #bg-fallback { background: #000; }
-  .theme-cinema #stage::after {
-    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 114px; z-index: 3; background: #000;
+  .theme-cinema #stage::after, .theme-cinema #stage::before {
+    content: ""; position: absolute; left: 0; right: 0; z-index: 3; background: #000;
   }
+  .theme-cinema #stage::after { top: 0; height: 114px; }
+  .theme-cinema #stage::before { bottom: 0; height: 72px; } /* the matching lower bar, under the rows */
   .theme-cinema .scrim-bottom { background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2) 55%, rgba(0,0,0,0)); }
   .theme-cinema .scrim-left {
     top: 114px; height: 760px; width: 1400px;
@@ -654,7 +666,6 @@
   .theme-cinema .glass {
     background: rgba(12,12,12,0.82); border: 1px solid #3a352c; box-shadow: 0 10px 26px rgba(0,0,0,0.5);
   }
-  .theme-cinema .seg-on,
   .theme-cinema .profile.focused, .theme-cinema .search-btn.focused, .theme-cinema .controls-btn.focused,
   .theme-cinema .hero-btn.focused, .theme-cinema .act.focused, .theme-cinema .voice-type.focused,
   .theme-cinema .profile-item.focused, .theme-cinema .controls-item.focused, .theme-cinema .key.focused,
@@ -663,7 +674,11 @@
     background: #d9b46a; color: #000;
   }
   .theme-cinema .controls-item.focused .sub { color: rgba(0,0,0,0.65); }
-  .theme-cinema .cell.focused .lift::before { box-shadow: 0 0 0 2px #d9b46a, 0 22px 40px rgba(0,0,0,0.65); }
+  .theme-cinema .cell.focused .lift::before {
+    box-shadow: 0 0 0 3px #d9b46a, 0 0 30px rgba(217,180,106,0.45), 0 22px 40px rgba(0,0,0,0.65);
+  }
+  .theme-cinema .seg-on { background: rgba(217,180,106,0.12); color: #d9b46a; }
+  .theme-cinema .poster-title { font-size: 19px; letter-spacing: 0.12em; text-transform: uppercase; }
   .theme-cinema .lift::after { border-color: #d9b46a; }
   .theme-cinema .title-row .lift::after { border-radius: 16px; } /* card radius + 10 */
   .theme-cinema .hero-eyebrow, .theme-cinema .controls-head { color: #d9b46a; letter-spacing: 0.22em; }
@@ -676,24 +691,36 @@
   #stage .more-card .lift, #stage .more-card .lift::before { box-shadow: none; background-color: transparent; }
   #stage .title-row .more-card .tile { background: none; }
 
-  /* Nature: the photo first. Lighter, airier glass, a thin title, rounder tiles */
+  /* Nature: the photo first. Warm, earthy glass with a sage tint, a soft sage focus, lighter type, a
+     larger thin clock, rounder tiles */
   .theme-nature { --tile-r: 24px; }
-  .theme-nature .scrim-bottom { background: linear-gradient(to top, rgba(0,0,0,0.38), rgba(0,0,0,0.08) 50%, rgba(0,0,0,0)); }
-  .theme-nature .scrim-left { background: radial-gradient(ellipse 100% 60% at 0% 50%, rgba(0,0,0,0.32), rgba(0,0,0,0) 100%); }
+  .theme-nature .scrim-top { height: 220px; background: linear-gradient(to bottom, rgba(18,22,14,0.42), rgba(18,22,14,0)); }
+  .theme-nature .scrim-bottom { background: linear-gradient(to top, rgba(18,22,14,0.42), rgba(18,22,14,0.1) 50%, rgba(18,22,14,0)); }
+  .theme-nature .scrim-left { background: radial-gradient(ellipse 90% 62% at 0% 52%, rgba(18,22,14,0.45), rgba(18,22,14,0.18) 55%, rgba(18,22,14,0) 100%); }
   .theme-nature .glass {
-    background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.32);
-    box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.5), 0 10px 28px rgba(0,0,0,0.18);
+    background:
+      linear-gradient(180deg, rgba(255,252,240,0.2) 0%, rgba(255,252,240,0.08) 60%, rgba(255,252,240,0.12) 100%),
+      rgba(52,62,44,0.32);
+    border: 1px solid rgba(240,245,225,0.34);
+    box-shadow: inset 0 1.5px 0 rgba(255,255,245,0.5), 0 10px 28px rgba(10,14,8,0.22);
   }
-  .theme-nature .seg-on,
   .theme-nature .profile.focused, .theme-nature .search-btn.focused, .theme-nature .controls-btn.focused,
   .theme-nature .hero-btn.focused, .theme-nature .act.focused, .theme-nature .voice-type.focused,
   .theme-nature .profile-item.focused, .theme-nature .controls-item.focused, .theme-nature .key.focused,
   .theme-nature .more-card.focused .more-circle, .theme-nature .idle .voice-mic.focused,
   .theme-nature .error .voice-mic.focused {
-    background: #fff; color: #111;
+    background: #eef3e4; color: #1f2a1c;
   }
-  .theme-nature .hero-title { font-weight: 200; font-size: 92px; letter-spacing: -0.03em; }
-  .theme-nature .lift::after { border-radius: 34px; } /* tile radius + 10 */
+  .theme-nature .controls-item.focused .sub { color: #4d5a45; }
+  .theme-nature .cell.focused .lift::before {
+    box-shadow: 0 0 0 3px #d6e6c8, 0 0 34px rgba(176,214,150,0.5), 0 30px 60px -12px rgba(10,14,8,0.5);
+  }
+  .theme-nature .lift::after { border-color: #d6e6c8; border-radius: 34px; } /* tile radius + 10 */
+  .theme-nature .seg-on { background: rgba(240,245,225,0.18); font-size: 30px; font-weight: 300; }
+  .theme-nature .seg, .theme-nature .profile-name { font-weight: 400; }
+  .theme-nature .hero-eyebrow { color: #d6e6c8; }
+  .theme-nature .hero-title { font-weight: 300; font-size: 92px; letter-spacing: -0.03em; }
+  .theme-nature .row-label { font-weight: 500; }
 </style>
 </head>
 <body>
