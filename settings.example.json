@@ -1,0 +1,23 @@
+{
+  "tvIp": "192.168.1.50",
+  "certificateProfile": "ZenTV",
+  "tizenStudio": "~/tizen-studio",
+  "tmdbKeyFile": "~/.zen-tv/tmdb-key",
+
+  "appName": "Zen TV",
+  "icon": "zen",
+  "region": "US",
+  "weather": { "latitude": 40.7128, "longitude": -74.0060, "units": "fahrenheit" },
+  "theme": "glass",
+  "recommendations": true,
+  "clock24h": false,
+  "backgroundSeconds": 60,
+
+  "apps": ["netflix", "youtube", "prime", "disney", "hulu", "max", "appletv"],
+  "alsoInstalled": ["peacock", "paramount"],
+
+  "profiles": [
+    { "name": "Eloise", "initial": "E", "color": "purple", "taste": "crime-drama" },
+    { "name": "James", "initial": "J", "color": "pink", "taste": "romance-comedy" }
+  ]
+}

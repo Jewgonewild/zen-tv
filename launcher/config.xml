@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets"
+        id="http://zentv.app/launcher" version="1.0.0" viewmodes="maximized">
+    <tizen:application id="ZenTVHome1.Launcher" package="ZenTVHome1" required_version="4.0"/>
+    <name>Zen TV</name>
+    <description>Clean home screen for the living-room TV</description>
+    <icon src="icon.png"/>
+    <content src="index.html"/>
+    <feature name="http://tizen.org/feature/screen.size.all"/>
+
+    <!-- Open other installed apps (Netflix, Hulu, ...) -->
+    <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+    <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
+    <tizen:privilege name="http://tizen.org/privilege/internet"/>
+    <!-- Voice search: the remote's microphone, for the browser's speech recognition -->
+    <tizen:privilege name="http://tizen.org/privilege/mediacapture"/>
+    <!-- Controls menu: switch the TV to another input (HDMI, tuner) -->
+    <tizen:privilege name="http://tizen.org/privilege/tv.window"/>
+
+    <!-- Weather (Open-Meteo), TMDB data and images, and the TV's own launch service -->
+    <access origin="*" subdomains="true"/>
+    <tizen:allow-navigation>*</tizen:allow-navigation>
+    <tizen:content-security-policy>default-src * 'unsafe-inline' 'unsafe-eval' data: blob:</tizen:content-security-policy>
+
+    <tizen:setting screen-orientation="landscape" context-menu="disable" background-support="enable"
+                   encryption="disable" install-location="auto" hwkey-event="enable"/>
+    <tizen:metadata key="http://samsung.com/tv/metadata/use.network" value="true"/>
+    <tizen:profile name="tv-samsung"/>
+</widget>

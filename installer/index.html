@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zen TV setup</title>
+<link rel="stylesheet" href="installer/installer.css">
+</head>
+<body>
+<div class="backdrop" aria-hidden="true"></div>
+<div class="layout">
+  <nav class="steps glass" aria-label="Setup steps">
+    <div class="brand">
+      <img src="installer/icons/zen.png" alt="">
+      <div><b>Zen TV</b><span>Setup</span></div>
+    </div>
+    <ol id="step-list"></ol>
+    <p class="credit">Zen TV by Emmanuel Pozo<br><a href="https://x.com/princepozo" target="_blank" rel="noopener">@princepozo</a></p>
+    <button type="button" class="btn small donate-btn" id="donate-open" aria-haspopup="dialog">♥ Support Zen TV</button>
+  </nav>
+  <main class="panel glass" id="panel" tabindex="-1" aria-live="polite"></main>
+</div>
+<dialog class="donate glass" id="donate" aria-labelledby="donate-title">
+  <h2 id="donate-title">Support Zen TV</h2>
+  <p>If Zen TV makes your TV a nicer place, you can chip in on Venmo. Thank you!</p>
+  <div class="qr"><img src="installer/venmo-qr.svg" width="200" height="200" alt="QR code for Venmo @epozo"></div>
+  <p class="handle">@epozo</p>
+  <div class="row donate-actions">
+    <a class="btn primary" href="https://venmo.com/u/epozo" target="_blank" rel="noopener">Open Venmo</a>
+    <button type="button" class="btn" id="donate-close">Close</button>
+  </div>
+</dialog>
+<script src="launcher/catalog.js"></script>
+<script src="installer/installer.js"></script>
+</body>
+</html>

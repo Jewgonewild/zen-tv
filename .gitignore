@@ -1,0 +1,28 @@
+# Your own settings (made by install.py); keys and tokens live in ~/.zen-tv, never here
+settings.json
+settings.json.tmp
+
+# Generated
+launcher/config.js
+launcher/icons/*.png
+build/
+*.wgt
+*.log
+
+# Tizen Studio / certificates (if you open launcher/ as a Tizen project)
+*.p12
+.sign/
+.buildResult/
+.project
+.tproject
+.settings/
+
+# Editors, OS and Python
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+__pycache__/
+.venv/
+venv/
+env/
