@@ -12,7 +12,7 @@ Made by Emmanuel Pozo ([@princepozo](https://x.com/princepozo)).
   <sub>Enjoying Zen TV? Say thanks on Venmo: <a href="https://venmo.com/u/epozo"><b>@epozo</b></a></sub>
 </p>
 
-![Zen TV's home screen: the app row over a scene from Lawrence of Arabia](docs/screenshots/home.jpg)
+![Zen TV's home screen: the app row over a scene from Cruella, with Watch Later and thumbs up/down](docs/screenshots/home.jpg)
 
 > **Tried on one TV only.** I built this for my own TV, a 2018 Samsung (UN65NU8000) running Tizen 4.0,
 > and that's the only one it has been tested on. Other Samsung TVs running Tizen will probably work, but
@@ -23,10 +23,13 @@ Made by Emmanuel Pozo ([@princepozo](https://x.com/princepozo)).
 
 - **Your apps** in one row, ordered by what you use most
 - **Landscape backgrounds**, or movie and show scenes when recommendations are on
-- **Recommendations** (optional): Trending, Classics, Watch Later, voice search, and thumbs up/down
-  on any title to steer what it suggests
-- **Profiles** for everyone in the house, each with an incognito switch that hides its
-  recommendations (just the apps over landscapes) until it's switched back
+- **Recommendations** (optional): Trending, Classics, Watch Later and voice search
+- **Thumbs up/down** on any title or movie background, to steer what it suggests next
+- **Open a title in its app**: Apple TV and Hulu go straight to the title; for a service you don't
+  have, "Get Philo to watch" (for example) takes you to Samsung's app store
+- **Profiles** for everyone in the house, each with its own theme, Watch Later and taste
+- **Incognito**: a switch on the profile pill that hides that profile's recommendations (just the
+  apps over landscapes) until it's switched back
 - **Five themes**: Glass, Midnight, Paper, Cinema and Nature, picked per profile from the profile menu
 - **Controls**: switch the TV's input or open its settings
 - Opens when the TV turns on, and comes back when you leave an app (optional)
@@ -36,11 +39,19 @@ Made by Emmanuel Pozo ([@princepozo](https://x.com/princepozo)).
 <table>
   <tr>
     <td width="50%"><img src="docs/screenshots/trending.jpg" alt="The Trending row, with the focused title as the background"></td>
-    <td width="50%"><img src="docs/screenshots/detail.jpg" alt="A title's actions: open it in its app, or save it to Watch Later"></td>
+    <td width="50%"><img src="docs/screenshots/detail.jpg" alt="A title's actions: open it in its app, save it to Watch Later, thumbs up or down"></td>
   </tr>
   <tr>
     <td><b>Trending</b> on your apps, with Classics and Watch Later below</td>
-    <td>Open a title in its app, or save it for later</td>
+    <td>Open a title in its app, save it for later, or give it a thumbs up or down</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/theme-menu.jpg" alt="The profile menu: the profiles, then this profile's theme"></td>
+    <td><img src="docs/screenshots/incognito.jpg" alt="Incognito on: just the apps over a landscape, the switch on the profile pill"></td>
+  </tr>
+  <tr>
+    <td><b>Profiles</b>, each picking its own theme</td>
+    <td><b>Incognito</b>: hide a profile's recommendations with one switch</td>
   </tr>
   <tr>
     <td><img src="docs/screenshots/controls.jpg" alt="The Controls menu: the TV's inputs and TV settings"></td>
@@ -52,7 +63,7 @@ Made by Emmanuel Pozo ([@princepozo](https://x.com/princepozo)).
   </tr>
 </table>
 
-**Themes.** Glass (above), plus Midnight, Paper, Cinema and Nature:
+**Themes.** Glass (above), plus Midnight, Paper, Cinema and Nature, picked per profile:
 
 ![The Midnight, Paper, Cinema and Nature themes](docs/screenshots/themes.jpg)
 
@@ -106,7 +117,9 @@ certificate, choosing Allow on the TV), and your agent will tell you when.
 | --- | --- |
 | Open an app | Left/Right, then OK. Back while it's loading cancels |
 | Recommendations | Down from the apps: Trending, Classics, Watch Later |
-| Switch profile | Up, then OK on your name (top left) |
+| Thumbs up/down | OK on a title, then Right to 👍 or 👎; or Up to a movie background's buttons |
+| Switch profile or theme | Up, then OK on your name (top left) |
+| Incognito | Up, then Right to the switch next to your name, and OK |
 | Inputs and TV settings | Up, then Right to **Controls** |
 | Search | Up, then Right past Controls (with recommendations on) |
 | Go back | Back |
