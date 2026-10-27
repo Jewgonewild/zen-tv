@@ -7,6 +7,11 @@ beautiful landscapes, with optional movie and show recommendations. No ads, no c
 
 Made by Emmanuel Pozo ([@princepozo](https://x.com/princepozo)).
 
+<p align="center">
+  <a href="https://venmo.com/u/epozo"><img src="installer/venmo-qr.svg" width="140" alt="QR code for Venmo @epozo"></a><br>
+  <sub>Enjoying Zen TV? Say thanks on Venmo: <a href="https://venmo.com/u/epozo"><b>@epozo</b></a></sub>
+</p>
+
 ![Zen TV's home screen: the app row over a scene from Lawrence of Arabia](docs/screenshots/home.jpg)
 
 > **Tried on one TV only.** I built this for my own TV, a 2018 Samsung (UN65NU8000) running Tizen 4.0,
@@ -18,9 +23,11 @@ Made by Emmanuel Pozo ([@princepozo](https://x.com/princepozo)).
 
 - **Your apps** in one row, ordered by what you use most
 - **Landscape backgrounds**, or movie and show scenes when recommendations are on
-- **Recommendations** (optional): Trending, Classics, Watch Later and voice search
-- **Profiles** for everyone in the house
-- **Five themes**: Glass, Midnight, Paper, Cinema and Nature
+- **Recommendations** (optional): Trending, Classics, Watch Later, voice search, and thumbs up/down
+  on any title to steer what it suggests
+- **Profiles** for everyone in the house, each with an incognito switch that hides its
+  recommendations (just the apps over landscapes) until it's switched back
+- **Five themes**: Glass, Midnight, Paper, Cinema and Nature, picked per profile from the profile menu
 - **Controls**: switch the TV's input or open its settings
 - Opens when the TV turns on, and comes back when you leave an app (optional)
 
@@ -108,8 +115,12 @@ certificate, choosing Allow on the TV), and your agent will tell you when.
 
 - The remote's Home button still opens Samsung's bar; no app can replace it. Zen TV opens at power-on
   and when you leave an app, so you rarely see Samsung's.
-- "Open in Netflix" (and the like) opens the app's home screen, not the title itself: Samsung doesn't
-  let one app open a specific title in another.
+- "Open in Apple TV" and "Open in Hulu" go straight to the title. Most other apps (Netflix, Prime
+  Video on older TVs, Disney+, Max and more) only open to their home screen: they ignore requests to
+  open a title from another app. Title links come from [JustWatch](https://www.justwatch.com).
+- When a title streams on a service you don't have, its button says "Get Philo to watch" (for
+  example). It opens Samsung's app store, where you search for the app: Samsung TVs don't let other
+  apps open one app's store page.
 - Samsung certificates expire after a few years. When yours does, make a new one and install again.
 - With recommendations on, your TMDB key is stored inside the app on your TV, so it can fetch titles.
 
@@ -158,7 +169,7 @@ OK, Escape = Back).
 | --- | --- |
 | `appName` | The name in the TV's app list and the Controls menu |
 | `icon` | `zen`, `dawn`, `night`, `lake`, or `custom` (your upload, in `~/.zen-tv/icon.png`) |
-| `theme` | `glass` (default), `midnight`, `paper`, `cinema` or `nature` |
+| `theme` | `glass` (default), `midnight`, `paper`, `cinema` or `nature`: where every profile starts (each can pick its own from the profile menu) |
 | `recommendations` | `true` (default) or `false` for just your apps over landscapes |
 | `tvIp` | The TV's IP address |
 | `certificateProfile` | Your Tizen Studio certificate profile |

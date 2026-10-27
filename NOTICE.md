@@ -46,7 +46,8 @@ generated from a Venmo profile link; both are covered by the MIT licence.
 ## Data
 
 Movie and TV data and images come from TMDB at runtime (your own API key). This product uses the TMDB
-API but is not endorsed or certified by TMDB. Weather from Open-Meteo (CC BY 4.0). App icons are
+API but is not endorsed or certified by TMDB. Links that open a title in its app (Apple TV, Hulu)
+are looked up from JustWatch when you open a title. Weather from Open-Meteo (CC BY 4.0). App icons are
 fetched from your own TV when you set it up; they belong to their owners and aren't included here.
 
 ## Trademarks

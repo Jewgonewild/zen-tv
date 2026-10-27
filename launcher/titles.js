@@ -78,12 +78,13 @@ window.ZEN_TITLES = (function () {
 
   // GET a TMDB path; a v4 read token (long) goes in a header, a v3 key in the query string.
   // At most MAX_IN_FLIGHT requests run at once, so a refresh never floods the TV's network/CPU.
-  // urgent (search) jumps the queue, so it never waits behind a background refresh. XHR rather than
+  // urgent (search, a detail view) jumps the queue, so it never waits behind a background refresh, and
+  // still runs while the queue is paused (someone is looking at a spinner). XHR rather than
   // fetch so a request that hangs is given up after REQUEST_TIMEOUT_MS (Chrome 56 can't cancel a
   // fetch) instead of holding one of the six slots forever.
   var MAX_IN_FLIGHT = 6;
   var REQUEST_TIMEOUT_MS = 10000;
-  var inFlight = 0, waiting = [];
+  var inFlight = 0, waiting = [], urgentWaiting = [];
   function tmdb(key, path, urgent) {
     return new Promise(function (resolve, reject) {
       var run = function () {
@@ -109,14 +110,17 @@ window.ZEN_TITLES = (function () {
           x.send();
         } catch (e) { settle(false, "couldn't send"); } // never leave a slot taken
       };
-      if (urgent) waiting.unshift(run); else waiting.push(run);
+      (urgent ? urgentWaiting : waiting).push(run);
       pump();
     });
   }
   function pump() {
-    while (!paused && inFlight < MAX_IN_FLIGHT && waiting.length) { inFlight++; waiting.shift()(); }
+    while (inFlight < MAX_IN_FLIGHT && (urgentWaiting.length || (!paused && waiting.length))) {
+      inFlight++;
+      (urgentWaiting.length ? urgentWaiting : waiting).shift()();
+    }
   }
-  // While another app starts or is on screen, queued requests wait (requests already sent finish):
+  // While another app starts or is on screen, queued background requests wait (requests already sent finish):
   // a launching app gets the TV's network and CPU to itself
   var paused = false;
   function setPaused(p) {
@@ -163,23 +167,62 @@ window.ZEN_TITLES = (function () {
     };
   }
 
+  /* ---------- Ratings: thumbs up / down on a title, per profile ---------- */
+  // [{ id, type, tmdbId, title, genreIds, r: 1 | -1, at }], newest first
+  var RATINGS_KEY = "zen.ratings.v1";
+  var RATINGS_MAX = 300;
+  // Kept in memory once read: the title view and the hero check a rating on every button move
+  var ratingsCache = {};
+  function readRatings(profile) {
+    var k = profileKey(RATINGS_KEY, profile);
+    if (!ratingsCache[k]) {
+      try { ratingsCache[k] = JSON.parse(localStorage.getItem(k)) || []; } catch (e) { ratingsCache[k] = []; }
+    }
+    return ratingsCache[k];
+  }
+  function ratingOf(profile, id) {
+    var hit = readRatings(profile).filter(function (x) { return x.id === id; })[0];
+    return hit ? hit.r : 0;
+  }
+  // r: 1 (thumbs up), -1 (thumbs down) or 0 (clear)
+  function rate(profile, it, r) {
+    var list = readRatings(profile).filter(function (x) { return x.id !== it.id; });
+    if (r) list.unshift({ id: it.id, type: it.type, tmdbId: it.tmdbId, title: it.title,
+      genreIds: savedGenres(it), r: r, at: Date.now() });
+    var k = profileKey(RATINGS_KEY, profile);
+    ratingsCache[k] = list.slice(0, RATINGS_MAX);
+    try { localStorage.setItem(k, JSON.stringify(ratingsCache[k])); } catch (e) {}
+  }
+
   /* ---------- Taste: what a profile leans toward ---------- */
   // Genre weights: the profile's starting taste plus a point per genre for each title saved to its
-  // Watch Later (capped, so twenty saved dramas can't drown everything else). Trending is ranked by
-  // it, today's Classics lean on it, and saved titles seed "Because you saved …" backgrounds.
+  // Watch Later or given a thumbs up (capped, so twenty saved dramas can't drown everything else),
+  // and minus a point per genre for each thumbs down (capped too, so a few can't bury a genre).
+  // Trending is ranked by it, today's Classics lean on it, and liked and saved titles seed
+  // "Because you liked / saved …" backgrounds.
   var SAVE_CAP = 4;
+  var DISLIKE_CAP = 3;
   function savedGenres(it) {
     if (it.genreIds && it.genreIds.length) return it.genreIds;
     // older saves only have the hero line ("1995 · Crime · Drama")
     return (it.sub || "").split(" · ").map(function (name) { return GENRE_IDS[name]; }).filter(Boolean);
   }
   function taste(profile, saved) {
-    var w = {}, counts = {};
+    var w = {}, counts = {}, downs = {};
     Object.keys(profile.favorGenres).forEach(function (g) { w[g] = profile.favorGenres[g]; });
-    (saved || []).forEach(function (it) {
+    var ratings = readRatings(profile);
+    var liked = ratings.filter(function (x) { return x.r > 0; });
+    // a title both saved and liked counts once
+    var likedIds = {};
+    liked.forEach(function (x) { likedIds[x.id] = true; });
+    (saved || []).filter(function (it) { return !likedIds[it.id]; }).concat(liked).forEach(function (it) {
       savedGenres(it).forEach(function (g) { counts[g] = (counts[g] || 0) + 1; });
     });
+    ratings.forEach(function (x) {
+      if (x.r < 0) (x.genreIds || []).forEach(function (g) { downs[g] = (downs[g] || 0) + 1; });
+    });
     Object.keys(counts).forEach(function (g) { w[g] = (w[g] || 0) + Math.min(counts[g], SAVE_CAP); });
+    Object.keys(downs).forEach(function (g) { w[g] = (w[g] || 0) - Math.min(downs[g], DISLIKE_CAP); });
     return w;
   }
   function score(it, w) {
@@ -201,6 +244,7 @@ window.ZEN_TITLES = (function () {
   // { id, type: "movie"|"tv", title, year, path, reason } (path is a TMDB image path), one image
   // per title, no title repeated across groups. Picks resolve first so the rest can skip them.
   // profile: one of PROFILES; saved: its Watch Later items.
+  var LIKED_SEEDS = 5; // most recent thumbs up used for "Because you liked …"
   var SAVED_SEEDS = 5; // most recent saves used for "Because you saved …"
   function load(key, profile, saved, done) {
     var seen = {};
@@ -291,10 +335,16 @@ window.ZEN_TITLES = (function () {
     Promise.all(profile.picks.map(resolvePick)).then(function (resolved) {
       if (cacheDirty) writePicksCache(profile, kept); // only current picks: removed ones drop out
       add("picks", resolved);
-      // Recommendations: from the latest Watch Later saves first, then a few random favourites
-      var fromSaves = (saved || []).filter(function (it) { return it.tmdbId && it.type; }).slice(0, SAVED_SEEDS);
-      return Promise.all(fromSaves.map(function (it) { return recsFor(it, "Because you saved " + it.title); })
-        .concat(pickSome(out.picks, Math.max(0, RECS_SEEDS - fromSaves.length)).map(function (p) {
+      // Recommendations: from the latest thumbs up and Watch Later saves first, then a few random
+      // favourites
+      var usable = function (it) { return it.tmdbId && it.type; };
+      var fromLikes = readRatings(profile).filter(function (x) { return x.r > 0 && usable(x); }).slice(0, LIKED_SEEDS);
+      var likedIds = {};
+      fromLikes.forEach(function (x) { likedIds[x.id] = true; });
+      var fromSaves = (saved || []).filter(function (it) { return usable(it) && !likedIds[it.id]; }).slice(0, SAVED_SEEDS);
+      return Promise.all(fromLikes.map(function (it) { return recsFor(it, "Because you liked " + it.title); })
+        .concat(fromSaves.map(function (it) { return recsFor(it, "Because you saved " + it.title); }))
+        .concat(pickSome(out.picks, Math.max(0, RECS_SEEDS - fromLikes.length - fromSaves.length)).map(function (p) {
           return recsFor(p, "Because you like " + p.title);
         })));
     }).then(addLists("recs")).then(function () {
@@ -538,6 +588,7 @@ window.ZEN_TITLES = (function () {
 
   return {
     profiles: PROFILES, profileKey: profileKey, region: REGION, toEntry: entry, setPaused: setPaused,
-    load: load, api: tmdb, trendingToday: trendingToday, classicsOnApps: classicsOnApps
+    load: load, api: tmdb, trendingToday: trendingToday, classicsOnApps: classicsOnApps,
+    ratingOf: ratingOf, rate: rate
   };
 })();

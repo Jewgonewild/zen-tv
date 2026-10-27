@@ -110,7 +110,7 @@
   .profile {
     position: absolute; top: 54px; left: var(--edge);
     display: flex; align-items: center;
-    padding: 6px 28px 6px 6px; border-radius: 999px;
+    padding: 6px; border-radius: 999px; /* the incognito switch ends it on the right */
   }
   .avatar {
     width: 54px; height: 54px; border-radius: 50%;
@@ -128,7 +128,8 @@
   .tile.app-tile { background-color: #1c1e26; background-size: cover; display: flex; align-items: center; justify-content: center; }
   .app-label { font-size: 30px; font-weight: 600; color: var(--fg); visibility: hidden; }
   /* Up from the apps reaches the top line: profile pill (left) and search (right) */
-  .profile, .search-btn, .controls-btn { transition: transform 0.2s cubic-bezier(0.34, 1.45, 0.64, 1), background-color 0.15s ease, color 0.15s ease; }
+  /* Only the scale animates: fading colour would redraw the glass shadows on every frame of the fade */
+  .profile, .search-btn, .controls-btn { transition: transform 0.2s cubic-bezier(0.34, 1.45, 0.64, 1); }
   .profile.focused, .search-btn.focused, .controls-btn.focused { background: #fff; color: #111; transform: scale(1.06); }
   .profile.focused .profile-name { text-shadow: none; }
 
@@ -145,6 +146,12 @@
   .profile-item .avatar { width: 48px; height: 48px; font-size: 22px; margin-right: 16px; }
   .profile-item.focused { background: #fff; color: #111; }
   .profile-item .check { margin-left: auto; padding-left: 24px; }
+  /* Below the profiles: this profile's theme, the choices indented under a heading */
+  .profile-rule { height: 1px; margin: 10px 16px; background: currentColor; opacity: 0.18; }
+  .profile-head { padding: 6px 24px 8px; font-size: 19px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-faint); }
+  .profile-item.theme-choice { padding-left: 40px; }
+  .swatch { width: 36px; height: 36px; border-radius: 50%; flex: none; margin-right: 18px; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4); }
+  .profiles-open .hero { visibility: hidden; } /* the menu reaches down over the hero's text */
 
   /* Search: top right, same height as the pill */
   .search-btn {
@@ -238,7 +245,6 @@
   .more-circle {
     width: 110px; height: 110px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    transition: background-color 0.15s ease, color 0.15s ease;
   }
   .more-circle svg { width: 44px; height: 44px; }
   .more-circle path { stroke: currentColor; }
@@ -293,7 +299,7 @@
   .voice-type {
     display: inline-block; margin-top: 24px; padding: 14px 30px; border-radius: 999px;
     font-size: 24px; font-weight: 600;
-    transition: transform 0.2s cubic-bezier(0.34, 1.45, 0.64, 1), background-color 0.15s ease, color 0.15s ease;
+    transition: transform 0.2s cubic-bezier(0.34, 1.45, 0.64, 1);
   }
   .voice-type.focused { background: #fff; color: #111; transform: scale(1.06); }
 
@@ -383,9 +389,9 @@
     /* gaining focus: a small spring overshoot, like tvOS */
     transition: transform 0.24s cubic-bezier(0.34, 1.45, 0.64, 1);
   }
-  /* Glint drifts slowly on the focused tile (a cheap composited transform; the 3D idle sway was
-     dropped because it kept the GPU busy and made scrolling lag on the TV) */
-  .cell.focused .tile::after { opacity: 1; -webkit-animation: glint 6s ease-in-out 0.4s infinite; animation: glint 6s ease-in-out 0.4s infinite; }
+  /* Glint drifts slowly on the newly focused tile, twice, then rests (the 3D idle sway was dropped
+     because it kept the GPU busy; a glint looping forever kept it busy on the idle home screen) */
+  .cell.focused .tile::after { opacity: 1; -webkit-animation: glint 6s ease-in-out 0.4s 2; animation: glint 6s ease-in-out 0.4s 2; }
   @keyframes glint {
     0%, 100% { transform: translate(-30%, -30%); }
     50%      { transform: translate(-8%, -22%); }
@@ -461,7 +467,7 @@
     display: none; align-items: center;
     margin-top: 26px; padding: 14px 30px; border-radius: 999px;
     font-size: 24px; font-weight: 600; text-shadow: none;
-    transition: transform 0.2s cubic-bezier(0.34, 1.45, 0.64, 1), background-color 0.15s ease, color 0.15s ease;
+    transition: transform 0.2s cubic-bezier(0.34, 1.45, 0.64, 1);
   }
   .hero.can-save .hero-btn { display: inline-flex; }
   .hero-btn.focused, .act.focused { background: #fff; color: #111; transform: scale(1.06); }
@@ -476,9 +482,16 @@
     display: inline-flex; align-items: center; margin-right: 20px;
     padding: 14px 30px; border-radius: 999px;
     font-size: 24px; font-weight: 600; text-shadow: none;
-    transition: transform 0.2s cubic-bezier(0.34, 1.45, 0.64, 1), background-color 0.15s ease, color 0.15s ease;
+    transition: transform 0.2s cubic-bezier(0.34, 1.45, 0.64, 1);
   }
   .act.disabled { color: var(--fg-dim); }
+  /* Thumbs up / down: round icon buttons; a thumb that's set is filled */
+  /* (the same on a movie background, after "+ Watch Later") */
+  .thumb { width: 60px; height: 60px; padding: 0; justify-content: center; }
+  .hero-btn.thumb { margin-left: 20px; }
+  .thumb svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; }
+  .thumb.on svg { fill: currentColor; }
+  .thumb.down svg { transform: rotate(180deg); }
 
   /* Rows stack vertically (apps, Trending, Classics, Watch Later) inside .rows: Trending 338px below
      the apps, each title row 380px below the one above (their cards are taller). Moving down
@@ -557,6 +570,34 @@
   .simple .controls-btn { right: var(--edge); }
   .simple .controls-label { right: calc(var(--edge) - 20px); }
 
+  /* Incognito: a switch joined to the right end of the profile pill. On, this profile sees just the
+     apps over landscapes (no movie backgrounds, rows or search); its saved data is kept. Only with
+     recommendations on (there's nothing to hide otherwise). The label
+     shows only while the switch has focus. */
+  .incog-rule { width: 2px; height: 34px; margin: 0 10px 0 24px; background: currentColor; opacity: 0.3; }
+  .incog { position: relative; padding: 5px; border-radius: 999px; transition: transform 0.2s cubic-bezier(0.34, 1.45, 0.64, 1); }
+  .incog.focused { background: #fff; transform: scale(1.06); }
+  .incog-track { position: relative; width: 76px; height: 42px; border-radius: 999px; background: rgba(255,255,255,0.22); box-shadow: inset 0 0 0 2px rgba(0,0,0,0.12); }
+  .incog.focused .incog-track, .profile.focused .incog-track, .theme-paper .incog-track { background: rgba(0,0,0,0.14); }
+  .incog-knob {
+    position: absolute; top: 3px; left: 3px; width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: #fff; color: #3a3a44; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: transform 0.2s ease;
+  }
+  .incog-knob svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .incog.on .incog-track, .incog.on.focused .incog-track { background: rgba(255,255,255,0.95); }
+  .incog.on .incog-knob { transform: translateX(34px); background: #1d1b2a; color: #fff; }
+  .incog-label {
+    position: absolute; top: calc(100% + 16px); left: 50%; transform: translateX(-50%); display: none;
+    white-space: nowrap; font-size: 20px; font-weight: 600; color: var(--fg); text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+  }
+  .incog.focused .incog-label { display: block; }
+  .incognito .title-shelf, .incognito .search-btn { display: none; }
+  .incognito .controls-btn { right: var(--edge); }
+  .incognito .controls-label { right: calc(var(--edge) - 20px); }
+  .simple .incog-rule, .simple .incog { display: none; }
+  .simple .profile { padding-right: 28px; } /* no switch: room after the name */
+
   /* ---------- Themes ----------
      Glass (above) is the default. The others restyle it through a class on <html> (theme-midnight,
      theme-paper, theme-cinema, theme-nature) set from settings.json "theme": colours, materials and
@@ -581,7 +622,7 @@
     background: rgba(18,20,52,0.82); border: 1px solid rgba(150,140,255,0.28);
     box-shadow: 0 12px 30px rgba(0,0,0,0.35);
   }
-  .theme-midnight .profile.focused, .theme-midnight .search-btn.focused, .theme-midnight .controls-btn.focused,
+  .theme-midnight .profile.focused, .theme-midnight .incog.focused, .theme-midnight .search-btn.focused, .theme-midnight .controls-btn.focused,
   .theme-midnight .hero-btn.focused, .theme-midnight .act.focused, .theme-midnight .voice-type.focused,
   .theme-midnight .profile-item.focused, .theme-midnight .controls-item.focused, .theme-midnight .key.focused,
   .theme-midnight .more-card.focused .more-circle, .theme-midnight .idle .voice-mic.focused,
@@ -614,7 +655,7 @@
   .theme-paper .glass {
     background: #fff; border: 1px solid #e2dccd; box-shadow: 0 4px 14px rgba(60,48,30,0.10);
   }
-  .theme-paper .profile.focused, .theme-paper .search-btn.focused, .theme-paper .controls-btn.focused,
+  .theme-paper .profile.focused, .theme-paper .incog.focused, .theme-paper .search-btn.focused, .theme-paper .controls-btn.focused,
   .theme-paper .hero-btn.focused, .theme-paper .act.focused, .theme-paper .voice-type.focused,
   .theme-paper .profile-item.focused, .theme-paper .controls-item.focused, .theme-paper .key.focused,
   .theme-paper .more-card.focused .more-circle, .theme-paper .idle .voice-mic.focused,
@@ -666,7 +707,7 @@
   .theme-cinema .glass {
     background: rgba(12,12,12,0.82); border: 1px solid #3a352c; box-shadow: 0 10px 26px rgba(0,0,0,0.5);
   }
-  .theme-cinema .profile.focused, .theme-cinema .search-btn.focused, .theme-cinema .controls-btn.focused,
+  .theme-cinema .profile.focused, .theme-cinema .incog.focused, .theme-cinema .search-btn.focused, .theme-cinema .controls-btn.focused,
   .theme-cinema .hero-btn.focused, .theme-cinema .act.focused, .theme-cinema .voice-type.focused,
   .theme-cinema .profile-item.focused, .theme-cinema .controls-item.focused, .theme-cinema .key.focused,
   .theme-cinema .more-card.focused .more-circle, .theme-cinema .idle .voice-mic.focused,
@@ -704,7 +745,7 @@
     border: 1px solid rgba(240,245,225,0.34);
     box-shadow: inset 0 1.5px 0 rgba(255,255,245,0.5), 0 10px 28px rgba(10,14,8,0.22);
   }
-  .theme-nature .profile.focused, .theme-nature .search-btn.focused, .theme-nature .controls-btn.focused,
+  .theme-nature .profile.focused, .theme-nature .incog.focused, .theme-nature .search-btn.focused, .theme-nature .controls-btn.focused,
   .theme-nature .hero-btn.focused, .theme-nature .act.focused, .theme-nature .voice-type.focused,
   .theme-nature .profile-item.focused, .theme-nature .controls-item.focused, .theme-nature .key.focused,
   .theme-nature .more-card.focused .more-circle, .theme-nature .idle .voice-mic.focused,
@@ -743,6 +784,11 @@
   <div class="profile glass" id="profile">
     <div class="avatar" id="profile-avatar"></div>
     <div class="profile-name" id="profile-name"></div>
+    <div class="incog-rule"></div><div class="incog" id="incog">
+      <div class="incog-track"><div class="incog-knob"><svg viewBox="0 0 24 24"><path d="M3 11h18M6.5 11l2-6h7l2 6"/>
+        <circle cx="7.5" cy="16.5" r="2.6"/><circle cx="16.5" cy="16.5" r="2.6"/><path d="M10.1 16.3c1.2-.8 2.6-.8 3.8 0"/></svg></div></div>
+      <div class="incog-label" id="incog-label"></div>
+    </div>
   </div>
   <div class="profile-menu glass" id="profile-menu"></div>
   <div class="controls-btn glass" id="controls-btn">
@@ -803,7 +849,8 @@
     <div class="hero-title" id="hero-title"></div>
     <div class="hero-sub" id="hero-sub"></div>
     <div class="hero-desc" id="hero-desc"></div>
-    <div class="hero-btn glass" id="hero-btn">+ Watch Later</div>
+    <div class="hero-btn glass" id="hero-btn">+ Watch Later</div><div class="hero-btn thumb glass" id="hero-up"
+      aria-label="Thumbs up"></div><div class="hero-btn thumb down glass" id="hero-down" aria-label="Thumbs down"></div>
     <div class="hero-actions" id="hero-actions"></div>
   </div>
   <!-- TMDB's terms require attribution; shown small and faint on movie/TV backgrounds only -->
@@ -822,11 +869,12 @@
   var SETTINGS = window.ZEN_SETTINGS || {};
   var APP_NAME = SETTINGS.appName || "Zen TV"; // settings.json "appName": in the TV's app list and the Controls menu
   document.title = APP_NAME;
-  // The look for the whole TV (settings.json "theme"); ?theme= overrides it, for previews
-  var THEMES = ["glass", "midnight", "paper", "cinema", "nature"];
+  // The look each profile starts with (settings.json "theme"); each can pick another in the profile
+  // menu (see "Themes" below). ?theme= overrides both, for previews.
+  var THEME_IDS = ["glass", "midnight", "paper", "cinema", "nature"];
+  var THEME_FORCED = /[?&]theme=\w/.test(location.search);
   var themeAsked = String((location.search.match(/[?&]theme=(\w+)/) || [])[1] || SETTINGS.theme || "").toLowerCase();
-  var THEME = THEMES.indexOf(themeAsked) >= 0 ? themeAsked : "glass";
-  if (THEME !== "glass") document.documentElement.className += " theme-" + THEME;
+  var THEME = THEME_IDS.indexOf(themeAsked) >= 0 ? themeAsked : "glass";
   // Recommendations (settings.json "recommendations", on by default; needs a TMDB key): movie and
   // TV backgrounds, the Trending / Classics / Watch Later rows and search. Off, or with no key, the
   // home screen keeps it simple: the apps over landscape photos. ?recommendations=off previews it.
@@ -877,7 +925,9 @@
   // the key file named in settings.json. Without a key, or with recommendations off, only landscapes are shown.
   // Attribution per TMDB's terms: this product uses the TMDB API but is not endorsed or certified by TMDB.
   var TMDB_KEY = RECOMMENDATIONS ? SETTINGS.tmdbKey : ""; // no key: nothing is fetched from TMDB
-  var TMDB_IMG = "https://image.tmdb.org/t/p/original"; // full-resolution masters, often 4K
+  // Backgrounds at the screen's own size: the originals are often 4K (1-3MB each, and decoding one
+  // made the crossfade stutter on the TV). TMDB scales any backdrop to this width on request.
+  var TMDB_IMG = "https://image.tmdb.org/t/p/w1920";
   var MIN_BG_WIDTH = 1920; // the TV draws at 1920x1080; anything smaller would look soft
   // Rotation pattern: about half favourites (picks + acclaimed), a quarter trending/new, a quarter landscapes
   // Nature puts the landscapes first: three in four backgrounds, with a movie now and then
@@ -888,6 +938,11 @@
 
   var isTizen = typeof window.tizen !== "undefined";
 
+  // Runs fn once the first frame is on screen (a zero-delay timer alone can run before it)
+  function afterFirstFrame(fn) {
+    requestAnimationFrame(function () { setTimeout(fn, 0); });
+  }
+
   /* ---------- Profiles ---------- */
   // Who's watching (profiles from settings.json), remembered on the TV so power-on opens to the last
   // one. Each keeps their own Watch Later, app order, Trending/Classics taste and backgrounds.
@@ -896,6 +951,50 @@
   var profile = PROFILES[Object.keys(PROFILES)[0]];
   try { profile = PROFILES[localStorage.getItem(PROFILE_KEY)] || profile; } catch (e) {}
   function profileKey(base) { return window.ZEN_TITLES.profileKey(base, profile); }
+
+  /* ---------- Themes: each profile picks its own in the profile menu ---------- */
+  // Glass is the base look; the others are a class on <html> (styles under "Themes")
+  var THEMES = [
+    { id: "glass", name: "Glass", swatch: "linear-gradient(135deg, #9fd3ff, #fff 55%, #c9b8ff)" },
+    { id: "midnight", name: "Midnight", swatch: "linear-gradient(135deg, #b85cff, #5a7bff)" },
+    { id: "paper", name: "Paper", swatch: "linear-gradient(135deg, #f3ecdf, #d9cdb6)" },
+    { id: "cinema", name: "Cinema", swatch: "linear-gradient(135deg, #d9b46a, #1a1408)" },
+    { id: "nature", name: "Nature", swatch: "linear-gradient(135deg, #eef3e4, #6f8f5a)" }
+  ];
+  var THEME_KEY = profileKey("zen.theme.v1");
+  var INCOGNITO_KEY = profileKey("zen.incognito.v1");
+  var incognito = false;
+  try { incognito = RECOMMENDATIONS && localStorage.getItem(INCOGNITO_KEY) === "1"; } catch (e) {}
+  var theme = THEME;
+  function applyTheme(id) {
+    theme = THEME_IDS.indexOf(id) >= 0 ? id : THEME;
+    var html = document.documentElement;
+    html.className = html.className.replace(/\s*theme-\w+/g, "") + (theme === "glass" ? "" : " theme-" + theme);
+    // Nature puts the landscapes first: three in four backgrounds, with a movie now and then
+    MIX = !RECOMMENDATIONS || incognito ? ["landscape"]
+      : theme === "nature" ? ["landscape", "landscape", "favorite", "landscape"]
+      : ["favorite", "landscape", "favorite", "trending"];
+  }
+  function setTheme(id) {
+    applyTheme(id);
+    if (THEME_FORCED) return; // a ?theme= preview: try it, but keep the profile's own
+    try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+  }
+  var savedTheme = null;
+  try { savedTheme = localStorage.getItem(THEME_KEY); } catch (e) {}
+  applyTheme(THEME_FORCED ? THEME : savedTheme || THEME);
+  // Incognito (the switch on the profile pill): this profile sees just the apps over landscapes
+  function applyIncognito() {
+    var html = document.documentElement;
+    html.className = html.className.replace(/\s*incognito/g, "") + (incognito ? " incognito" : "");
+    applyTheme(theme); // the background mix
+    renderIncognito(false);
+  }
+  function renderIncognito(focused) {
+    document.getElementById("incog").className = "incog" + (incognito ? " on" : "") + (focused ? " focused" : "");
+    document.getElementById("incog-label").textContent = incognito ? "Incognito on: apps and landscapes only" : "Incognito";
+  }
+  applyIncognito();
   // Switching reloads the launcher as the other person: everything rebuilds from their data
   function switchProfile(id) {
     if (id === profile.id) return;
@@ -980,6 +1079,10 @@
   }
   loadWeather();
   setInterval(loadWeather, 15 * 60 * 1000);
+  // started hidden (or offline then): fill it in as soon as the screen is back
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden && $("weather").className.indexOf("ready") < 0) loadWeather();
+  });
 
   /* ---------- Rotating photo background ---------- */
   // Two layers crossfade: the incoming photo is preloaded, then faded in over the old one.
@@ -1006,7 +1109,7 @@
     trending: []
   };
   var queues = { landscape: [], favorite: [], trending: [] };
-  var mixStep = 0;
+  var mixStep = 1; // MIX[1] is a landscape: the first background is a bundled photo, up without waiting for Wi-Fi
   var lastShown = null;
 
   // Remember what was shown in the last week (per TV, in localStorage) so titles don't repeat
@@ -1077,6 +1180,7 @@
   }
   function loadTmdb() {
     clearTimeout(tmdbRetry);
+    readBgCache();
     if (document.hidden) return; // don't compete with the app being watched; retried on return
     if (!TMDB_KEY || !window.ZEN_TITLES || tmdbLoading) return;
     if (Date.now() - tmdbLoadedAt < TMDB_REFRESH_MS) return;
@@ -1091,14 +1195,22 @@
       try { localStorage.setItem(BG_CACHE_KEY, JSON.stringify({ savedAt: tmdbLoadedAt, lists: r })); } catch (e) {}
     });
   }
-  // The saved lists first (instant), then a fetch only once they're stale
-  try {
-    var bgCache = JSON.parse(localStorage.getItem(BG_CACHE_KEY));
-    // shown either way; only complete lists count as fresh (older builds saved some without trending & new)
-    if (bgCache && applyBgLists(bgCache.lists) && bgCache.lists.classics.length && bgCache.lists.fresh.length) {
-      tmdbLoadedAt = bgCache.savedAt;
-    }
-  } catch (e) {}
+  // The saved lists right after the first frame (the first background is a bundled landscape, so
+  // they aren't needed before it), or by the first fetch check if that comes first (no frames are
+  // drawn while the app starts hidden); then a fetch only once they're stale
+  var bgCacheRead = false;
+  function readBgCache() {
+    if (bgCacheRead || tmdbLoadedAt) return;
+    bgCacheRead = true;
+    try {
+      var bgCache = JSON.parse(localStorage.getItem(BG_CACHE_KEY));
+      // shown either way; only complete lists count as fresh (older builds saved some without trending & new)
+      if (bgCache && applyBgLists(bgCache.lists) && bgCache.lists.classics.length && bgCache.lists.fresh.length) {
+        tmdbLoadedAt = bgCache.savedAt;
+      }
+    } catch (e) {}
+  }
+  afterFirstFrame(readBgCache);
   setTimeout(loadTmdb, 3000); // after startup settles, so first paint and key presses come first
   setInterval(loadTmdb, 30 * 60 * 1000); // checks; it only fetches once the lists are stale
   document.addEventListener("visibilitychange", function () {
@@ -1107,10 +1219,11 @@
 
   var currentBg = null;       // the background on screen now (the hero describes it)
   var holdBackground = false; // true while browsing the hero button or a title row: no auto-rotation
-  var displayToken = 0;       // only the latest requested background gets shown (bumped to cancel)
+  var displayToken = 0;       // only the latest requested background gets shown (cancelBg to cancel)
+  var loadingImg = null;      // the background still downloading, if any
   var screenBgId = null;      // the background faded in last (the hero catches up a moment later)
   var hideTimers = [null, null]; // pending fade-out per photo layer
-  var heroTimer = null;
+  var heroTimer = null, pendingHero = null; // the hero's next title, while its text is faded out
 
   // Crossfade to a background and describe it in the hero.
   //   opts.fast       a focus preview: quicker fades
@@ -1118,10 +1231,12 @@
   //   opts.onError    the image failed to load
   function displayBg(photo, opts) {
     opts = opts || {};
-    var token = ++displayToken;
-    var img = new Image();
+    cancelBg();
+    var token = displayToken;
+    var img = loadingImg = new Image();
     img.onload = function () {
       if (token !== displayToken) return; // a newer request superseded this one
+      loadingImg = null;
       if (opts.minWidth && img.naturalWidth < opts.minWidth) { if (opts.onTooSmall) opts.onTooSmall(); return; }
       screenBgId = photo.id;
       var inIdx = 1 - front, outIdx = front;
@@ -1158,16 +1273,30 @@
       var hero = $("hero");
       hero.style.opacity = 0;
       clearTimeout(heroTimer);
+      pendingHero = photo;
       heroTimer = setTimeout(function () { setHero(photo); }, opts.fast ? 250 : 900);
     };
     img.onerror = function () {
-      if (token === displayToken && opts.onError) setTimeout(opts.onError, 1000);
+      if (token !== displayToken) return;
+      loadingImg = null;
+      if (opts.onError) setTimeout(opts.onError, 1000);
     };
     img.src = photo.src;
+  }
+  // Drop the background still loading, if any. Its download stops too, so images nobody will see
+  // (previews of cards already scrolled past) don't hold up the row's thumbnails.
+  function cancelBg() {
+    displayToken++;
+    if (!loadingImg) return;
+    loadingImg.onload = loadingImg.onerror = null;
+    loadingImg.src = "";
+    loadingImg = null;
   }
 
   // Describe a background in the hero (and make it what "+ Watch Later" saves)
   function setHero(photo) {
+    clearTimeout(heroTimer);
+    pendingHero = null;
     $("hero-eyebrow").textContent = photo.eyebrow;
     $("hero-title").textContent = photo.title;
     $("hero-sub").textContent = photo.sub;
@@ -1208,11 +1337,11 @@
     clearTimeout(previewTimer);
     pendingPreview = null;
     // Already on screen (back on the card just left): drop the other card's image if it's still loading
-    if (screenBgId === photo.id) { displayToken++; return; }
+    if (screenBgId === photo.id) { cancelBg(); return; }
     pendingPreview = function () {
       pendingPreview = null;
       displayBg({
-        id: photo.id, src: photo.src.replace("/original/", "/w1280/"), eyebrow: photo.eyebrow,
+        id: photo.id, src: photo.src.replace("/w1920/", "/w1280/"), eyebrow: photo.eyebrow,
         title: photo.title, sub: photo.sub, desc: photo.desc, credit: photo.credit,
         type: photo.type, tmdbId: photo.tmdbId, path: photo.path, year: photo.year,
         genreIds: photo.genreIds, app: photo.app
@@ -1228,7 +1357,7 @@
   function cancelPreview() {
     clearTimeout(previewTimer);
     pendingPreview = null;
-    displayToken++; // drop any image still loading
+    cancelBg(); // drop any image still loading
   }
 
   /* ---------- Usage-ordered app row ---------- */
@@ -1279,8 +1408,8 @@
     if (i === current) return;
     var prev = current;
     current = i;
-    if (prev >= 0) cells[prev].className = "cell";
-    cells[current].className = "cell focused";
+    if (prev >= 0) cells[prev].className = "cell" + (cells[prev] === loadingCell ? " loading" : "");
+    cells[current].className = "cell focused" + (cells[current] === loadingCell ? " loading" : "");
 
     // Scroll only when focus would leave the visible window, like tvOS shelves
     if (current < scrollIndex) scrollIndex = current;
@@ -1343,6 +1472,8 @@
       var x = new XMLHttpRequest();
       x.open("POST", LAUNCH_SERVICE + store);
       x.timeout = LAUNCH_TIMEOUT_MS;
+      // An error answer fails at once, so the retry and the Tizen ID fallback come right away (on this
+      // TV the fallback is often what opens the app; waiting out an error left every tile stuck)
       x.onload = function () { if (x.status >= 200 && x.status < 300) resolve(); else reject(x.status); };
       x.onerror = x.ontimeout = function () { reject("no answer"); };
       x.send();
@@ -1396,6 +1527,10 @@
       if (!document.hidden) setQuiet(false);
     }, LOADING_MAX_MS);
   }
+  // The pulse is in view: on the pressed tile with focus still there, or on the detail view's Open
+  function pulseShown() {
+    return (zone === "apps" && !!loadingCell && loadingCell === cells[current]) || (zone === "detail" && !!detail.opening);
+  }
   function stopLoading() {
     opening = null;
     clearTimeout(loadingTimer);
@@ -1411,19 +1546,26 @@
   // Open an app given { name, store, ids } (a tile, or a streaming service from Watch Later)
   // The launch service opens the same app copy (and sign-in) as Smart Hub. If it doesn't answer, or
   // accepts but the app never comes on screen, we ask once more, then fall back to launching by
-  // Tizen ID (apps without one, like YouTube TV, report that they couldn't open). Apps can take a
+  // Tizen ID (apps without one report that they couldn't open). Apps can take a
   // few seconds to appear (YouTube TV ~2.5s), hence the patient retry rather than a quick fallback.
-  function openApp(app) {
-    if (!isTizen) return;
+  // Every launch (a tile, or a title's Open button) starts here; returns the launch's number, which
+  // stays current until another launch, a cancel, or the app coming on screen
+  function beginLaunch(app) {
     stopWatching(); // the previous app's status checks would only compete with this launch
     cancelled = null; // this launch is wanted, even if it's the app just cancelled
     // Another app pressed a moment ago may still be starting: close it so it can't land on top
     if (opening && opening.store !== app.store) closeApp(opening.store);
-    var tries = 0, gaveUp = false, seq = ++launchSeq;
+    clearTimeout(launchCheck); // the previous launch's retry or fallback stands down
+    return ++launchSeq;
+  }
+  function openApp(app) {
+    if (!isTizen) return;
+    var tries = 0, gaveUp = false, seq = beginLaunch(app);
     var fallback = function () {
       if (gaveUp || seq !== launchSeq) return;
       gaveUp = true;
       launchFirst(app.ids || [], 0, function (err) {
+        if (seq !== launchSeq) return; // cancelled, or another app opened since: not this launch's news
         stopWatching();
         stopLoading();
         setQuiet(false);
@@ -1473,8 +1615,18 @@
     var c = cancelled;
     cancelled = null;
     if (Date.now() > c.until) return; // long after: something the user opened since
-    closeApp(c.store);
-    try { tizen.application.launch(tizen.application.getCurrentApplication().appInfo.id); } catch (e) {}
+    // Only if it's the cancelled app that came up (not Smart Hub or another app the user went to).
+    // It can report "not visible" for a moment as it starts, so ask twice; no answer counts as it.
+    var bringBack = function () {
+      closeApp(c.store);
+      try { tizen.application.launch(tizen.application.getCurrentApplication().appInfo.id); } catch (e) {}
+    };
+    var check = function (again) {
+      appVisible(c.store).then(function (visible) {
+        if (visible) bringBack(); else if (again) setTimeout(function () { check(false); }, 1500);
+      }, bringBack);
+    };
+    check(true);
   });
 
   /* ---------- Return home when a launched app closes ---------- */
@@ -1619,6 +1771,7 @@
       if (row.active) row.focus(row.current, true); else if (row.near) loadImages();
     };
     row.focus = function (i, force) {
+      if (!row.cells.length) return; // not filled yet (its titles are still loading)
       i = Math.max(0, Math.min(row.cells.length - 1, i));
       if (i === row.current && !force) return;
       row.blur(); // only the previously focused card needs its class reset
@@ -1714,7 +1867,7 @@
       subs.some(function (p) { return PROVIDER_APPS[p.provider_id] && (match = p); });
       var provider = match
         ? { text: "On " + appName(PROVIDER_APPS[match.provider_id]), app: PROVIDER_APPS[match.provider_id] }
-        : subs.length ? { text: "On " + subs[0].provider_name + " (no app here)", app: null }
+        : subs.length ? { text: "On " + subs[0].provider_name, app: null, missing: subs[0].provider_name }
         : (us.rent || us.buy) ? { text: "Rent or buy", app: null }
         : { text: "Not streaming yet", app: null };
       provider.checkedAt = Date.now();
@@ -1742,13 +1895,17 @@
       if (it.id !== item.id) return;
       it.provider = provider;
       var name = laterRow.cells[i] && laterRow.cells[i].querySelector(".name");
-      if (name) name.textContent = provider.text;
+      if (name) name.textContent = providerText(provider);
     });
     if (detail && detail.item.id === item.id) { detail.item.provider = provider; renderDetail(); }
   }
 
+  // A card's caption (saves checked before today may still say "On Philo (no app here)")
+  function providerText(provider) {
+    return provider.text.replace(" (no app here)", "");
+  }
   var laterRow = new TitleRow($("later-row"), function (it) {
-    return titleCard(it, it.provider ? it.provider.text : "Checking where to watch…");
+    return titleCard(it, it.provider ? providerText(it.provider) : "Checking where to watch…");
   }, function (it) {
     // only look up where to watch once focus settles, not for every card scrolled past
     clearTimeout(providerTimer);
@@ -1773,14 +1930,32 @@
     // Trending/Classics cards know their app; saved titles and search results look it up
     var appKey = it.app || (it.provider && it.provider.app);
     var app = appKey && appByKey(appKey);
+    var links = titleLinks[it.id] || {};
+    var link = app && links[app.key];
+    var missing = !app && it.provider && missingService(it.provider);
     var open = app
-      ? { label: "▶ Open in " + app.name, run: function () { openApp(app); startLoading(null, app); } }
+      ? { label: "▶ Open in " + app.name, run: function () { openTitle(app, it, link); } } // the title itself when there's a link
+      : missing ? { label: "Get " + missing + " to watch", run: function () { getApp(missing, it); } }
       : { label: it.provider ? it.provider.text : "Checking where to watch…", disabled: true };
     var second = detail.from === "later"
       ? { label: "Remove from Watch Later", run: function () { removeSaved(it); } }
       : { label: isSaved(it.id) ? "✓ In Watch Later" : "+ Watch Later", run: function () { toggleSaved(it); renderDetail(); } };
-    return [open, second];
+    var rating = window.ZEN_TITLES.ratingOf(profile, it.id);
+    var thumb = function (r) {
+      return { thumb: r, on: rating === r, label: r > 0 ? "Thumbs up" : "Thumbs down",
+        run: function () { rateTitle(it, rating === r ? 0 : r); renderDetail(); } };
+    };
+    return [open, second, thumb(1), thumb(-1)];
   }
+  // Thumbs up / down shape the profile's taste (titles.js) like a save does: the rows re-rank when
+  // you're back on the apps, and liked titles seed "Because you liked …" at the next background refresh
+  function rateTitle(it, r) {
+    window.ZEN_TITLES.rate(profile, it, r);
+    toast(r > 0 ? "More like this" : r < 0 ? "Less like this" : "Rating cleared");
+    tasteChanged = true;
+  }
+  var THUMB_SVG = '<svg viewBox="0 0 24 24"><path d="M7 10.5v10H3.5v-10H7zm2.2 10H17a2 2 0 0 0 2-1.6l1.3-6.5' +
+    'a2 2 0 0 0-2-2.4H14V5.6a2.3 2.3 0 0 0-2.3-2.3L9.2 10.2v10.3z"/></svg>';
   function renderDetail() {
     var actions = detailActions();
     // Focus starts on Open; until Left/Right is pressed it follows Open becoming available
@@ -1791,8 +1966,9 @@
     actions.forEach(function (a, i) {
       var b = document.createElement("div");
       b.className = "act glass" + (a.disabled ? " disabled" : "") + (i === detail.focus ? " focused" : "") +
-        (i === 0 && detail.opening ? " loading" : ""); // Open pulses while its app starts
-      b.textContent = a.label;
+        (i === 0 && detail.opening ? " loading" : "") + // Open pulses while its app starts
+        (a.thumb ? " thumb" + (a.thumb < 0 ? " down" : "") + (a.on ? " on" : "") : "");
+      if (a.thumb) { b.innerHTML = THUMB_SVG; b.setAttribute("aria-label", a.label); } else b.textContent = a.label;
       box.appendChild(b);
     });
     detail.actions = actions;
@@ -1811,8 +1987,9 @@
     }
     setZone("detail");
     renderDetail();
-    // A search result doesn't know its app yet (Watch Later cards look theirs up on focus)
     var it = detail.item;
+    if (RECOMMENDATIONS) lookupTitleLinks(it).then(function () { if (detail && detail.item === it) renderDetail(); }, function () {});
+    // A search result doesn't know its app yet (Watch Later cards look theirs up on focus)
     if (from === "search" && !it.app && !it.provider) {
       lookupProvider(it).then(function (p) {
         it.provider = p;
@@ -1823,6 +2000,113 @@
       });
     }
   }
+
+  /* ---------- Getting an app the TV doesn't have ---------- */
+  // A title streaming only on a service with no app here offers "Get <service>": Samsung's app store
+  // opens (com.samsung.tv.store; org.volt.apps is the same Apps panel on older firmware) and a note
+  // says what to search for. Opening one app's own store page was tried on the 2018 TV (Sub_Menu
+  // DETAIL + widget_id, tizenstore://ProductDetail, PAYLOAD): the store opens but stays on its home.
+  var STORE_APPS = ["com.samsung.tv.store", "org.volt.apps"];
+  function missingService(provider) {
+    if (provider.missing) return provider.missing;
+    var m = /^On (.+) \(no app here\)$/.exec(provider.text || ""); // saved before names were kept
+    return m && m[1];
+  }
+  function getApp(name, it) {
+    if (!isTizen) { toast("Opens the TV's app store to get " + name); return; }
+    toast("Opening Apps: search for " + name);
+    stopWatching();
+    cancelled = null;
+    clearTimeout(launchCheck);
+    launchSeq++; // an app still starting from before mustn't come up over the store
+    // a moment to read the note before the store covers the screen (Back meanwhile calls it off)
+    clearTimeout(getAppTimer);
+    getAppTimer = setTimeout(function () {
+      if (!detail || detail.item !== it) return;
+      launchFirst(STORE_APPS, 0, function () { toast("Couldn't open Apps. Get " + name + " from Apps on the Home bar"); });
+    }, 1500);
+  }
+  var getAppTimer = null;
+
+  /* ---------- Opening a title in its app ----------
+     Samsung's Smart Hub opens a title in an app by launching it with a PAYLOAD message; JustWatch
+     publishes those messages ({"id": tizen app id, "action_data": ...}, delivered as PAYLOAD
+     {"values": action_data}). Tested on the 2018 TV: Apple TV and Hulu open the title; Prime Video
+     (its older app) and Netflix receive the message and ignore it, and the cast route (DIAL) refuses
+     apps on the TV, so those open their home screens. Looked up when a title's view opens; without a
+     link, or if the app refuses, the app's home screen opens as before. */
+  var JW_PACKAGES = { hulu: "hulu", appletvplus: "appletv", itunes: "appletv" };
+  var titleLinks = {};   // title id -> { hulu: { appIds, data }, appletv: ... }
+  var linkLookups = {};  // title id -> promise
+  var JW_COUNTRY = /^[A-Za-z]{2}$/.test(SETTINGS.region || "") ? SETTINGS.region.toUpperCase() : "US";
+  var JW_QUERY = 'query($q: String!, $c: Country!) { popularTitles(country: $c, first: 6, filter: { searchQuery: $q }) { edges { node {' +
+    ' objectType content(country: $c, language: "en") { externalIds { tmdbId } }' +
+    ' offers(country: $c, platform: WEB) { deeplinkURL(platform: TIZENOS) package { technicalName } } } } } }';
+  function lookupTitleLinks(it) {
+    if (!it || !it.tmdbId) return Promise.reject("no id");
+    if (linkLookups[it.id]) return linkLookups[it.id];
+    linkLookups[it.id] = new Promise(function (resolve, reject) {
+      var x = new XMLHttpRequest();
+      x.open("POST", "https://apis.justwatch.com/graphql");
+      x.setRequestHeader("Content-Type", "application/json");
+      x.timeout = 6000;
+      x.onload = function () {
+        try {
+          var edges = JSON.parse(x.responseText).data.popularTitles.edges;
+          var kind = it.type === "tv" ? "SHOW" : "MOVIE", links = {};
+          edges.forEach(function (e) {
+            var n = e.node;
+            if (!n || !n.content || !n.content.externalIds || !n.offers) return;
+            if (n.objectType !== kind || String(n.content.externalIds.tmdbId) !== String(it.tmdbId)) return;
+            n.offers.forEach(function (o) {
+              if (!o || !o.package) return;
+              var key = JW_PACKAGES[o.package.technicalName], app = key && appByKey(key);
+              if (!app) return;
+              if (o.deeplinkURL && !links[key]) {
+                try {
+                  var d = JSON.parse(o.deeplinkURL);
+                  if (d.action_data) links[key] = { appIds: [d.id].concat(app.ids || []), data: d.action_data };
+                } catch (e) {} // a malformed link: that app opens its home screen
+              }
+            });
+          });
+          titleLinks[it.id] = links;
+          resolve(links);
+        } catch (e) { delete linkLookups[it.id]; reject(e); } // an error answer: try again next time
+      };
+      x.onerror = x.ontimeout = function () { delete linkLookups[it.id]; reject("no answer"); };
+      x.send(JSON.stringify({ query: JW_QUERY, variables: { q: it.title, c: JW_COUNTRY } }));
+    });
+    return linkLookups[it.id];
+  }
+
+  // Launch an app with a PAYLOAD, trying each of its Tizen ids; done(ok, info)
+  function launchWithPayload(appIds, payload, operation, done) {
+    var tryAt = function (i, lastErr) {
+      if (i >= appIds.length) { done(false, lastErr); return; }
+      try {
+        var ctl = new tizen.ApplicationControl(operation, null, null, null,
+          [new tizen.ApplicationControlData("PAYLOAD", [payload])]);
+        tizen.application.launchAppControl(ctl, appIds[i], function () { done(true, appIds[i]); },
+          function (e) { tryAt(i + 1, appIds[i] + ": " + e.name + " " + e.message); });
+      } catch (e) { tryAt(i + 1, appIds[i] + ": " + e.message); }
+    };
+    tryAt(0);
+  }
+  var OP_DEFAULT = "http://tizen.org/appcontrol/operation/default";
+
+  function openTitle(app, it, link) {
+    if (!link) { openApp(app); startLoading(null, app); return; }
+    if (!isTizen) { toast("Opens " + it.title + " in " + app.name + " on the TV"); return; }
+    var seq = beginLaunch(app);
+    startLoading(null, app);
+    // Watched from the start: the app can come on screen before the TV confirms the launch
+    watchApp(app);
+    launchWithPayload(link.appIds, JSON.stringify({ values: link.data }), OP_DEFAULT, function (ok) {
+      if (!ok && seq === launchSeq) openApp(app); // refused: the app's home screen, as before
+    });
+  }
+
   function closeDetail() {
     var from = detail.from;
     detail = null;
@@ -1980,7 +2264,7 @@
       window.ZEN_TITLES.classicsOnApps(TMDB_KEY, SERVICES, p, saved, function () {});
     });
   }
-  setTimeout(function () { loadAppRows(true); }, 0); // after the first frame (the rows start below the screen)
+  afterFirstFrame(function () { loadAppRows(true); }); // the rows start below the screen
   setTimeout(loadAppRows, 6000); // a fetch, if today's lists aren't saved yet, after the backgrounds
   setTimeout(warmOtherProfiles, WARM_DELAY_MS);
   setInterval(loadAppRows, 3600 * 1000);
@@ -1991,7 +2275,25 @@
   });
 
   /* ---------- Top line: profile pill and search ---------- */
-  var TOP_ORDER = RECOMMENDATIONS ? ["profile", "controls", "search"] : ["profile", "controls"]; // left to right
+  // The top line, left to right (incognito and search only with recommendations; no search while incognito)
+  function topOrder() {
+    return !RECOMMENDATIONS ? ["profile", "controls"]
+      : incognito ? ["profile", "incognito", "controls"] : ["profile", "incognito", "controls", "search"];
+  }
+  function toggleIncognito() {
+    incognito = !incognito;
+    try { localStorage.setItem(INCOGNITO_KEY, incognito ? "1" : ""); } catch (e) {}
+    applyIncognito();
+    // a landscape now, not at the next change: a movie may be on screen, still loading, or just faded
+    // in (the hero catches up a moment later)
+    if (incognito) {
+      var held = holdBackground;
+      holdBackground = false;
+      showNext();
+      holdBackground = held;
+    }
+    setZone(zone);
+  }
   var topFocus = "profile"; // which of them is focused in the "top" zone
   $("profile-avatar").textContent = profile.initial;
   $("profile-avatar").style.background = profile.color;
@@ -2015,6 +2317,31 @@
       item.appendChild(av);
       item.appendChild(name);
       if (p.id === profile.id) {
+        var check = document.createElement("div");
+        check.className = "check";
+        check.textContent = "✓";
+        item.appendChild(check);
+      }
+      menu.appendChild(item);
+    });
+    var rule = document.createElement("div");
+    rule.className = "profile-rule";
+    menu.appendChild(rule);
+    var head = document.createElement("div");
+    head.className = "profile-head";
+    head.textContent = "Theme";
+    menu.appendChild(head);
+    THEMES.forEach(function (t, i) {
+      var item = document.createElement("div");
+      item.className = "profile-item theme-choice" + (profileIds.length + i === menuIndex ? " focused" : "");
+      var sw = document.createElement("div");
+      sw.className = "swatch";
+      sw.style.background = t.swatch;
+      var name = document.createElement("div");
+      name.textContent = t.name;
+      item.appendChild(sw);
+      item.appendChild(name);
+      if (t.id === theme) {
         var check = document.createElement("div");
         check.className = "check";
         check.textContent = "✓";
@@ -2222,7 +2549,12 @@
         return window.ZEN_TITLES.toEntry(m.media_type, m, m.backdrop_path, "Search");
       });
       $("search-label").textContent = items.length ? "Results for “" + q + "”" : "No movies or shows match “" + q + "”";
+      // A result's detail view may be open over search: refill the row without previewing a new title
+      // behind it (focus catches up when the detail view closes)
+      var behindDetail = zone === "detail" && detail.from === "search";
+      if (behindDetail) searchRow.active = false;
       searchRow.setItems(items);
+      if (behindDetail) { searchRow.active = searchFocus === "results"; focusResults = false; return; }
       if (!items.length && searchFocus === "results") setSearchFocus(inputFocus());
       // after speaking, the first result is ready for OK
       if (items.length && focusResults && zone === "search" && searchFocus === "mic") setSearchFocus("results");
@@ -2392,12 +2724,22 @@
   // "search", "browse" (a row's "View more" grid), and "detail" (a title's buttons, over the row,
   // search or grid it came from)
   var ROW_ZONES = ["trend", "classic", "later"]; // top to bottom, below the app row
+  // A row can take focus once it has been filled (at power-on its titles may still be on the way)
+  function rowReady(z) { return titleRows[z].cells.length > 0; }
+  // The nearest filled row above (dir -1) or below (dir 1) row index `at` (-1 is the app row)
+  function nextRow(at, dir) {
+    if (incognito) return null; // the rows are hidden
+    for (var i = at + dir; i >= 0 && i < ROW_ZONES.length; i += dir) if (rowReady(ROW_ZONES[i])) return ROW_ZONES[i];
+    return null;
+  }
   var titleRows = { trend: trendRow, classic: classicRow, later: laterRow };
   var zone = "apps";
   var stage = $("stage");
   function setZone(z) {
     // Entering a title row: drop any rotation image still loading, the row previews its own
-    if (titleRows[z]) cancelPreview();
+    // Entering the hero: same, so the title it describes can't change while it has focus
+    if (titleRows[z] || z === "hero") cancelPreview();
+    if (z === "hero" && zone !== "hero") heroFocus = 0; // arriving: "+ Watch Later" first
     zone = z;
     // The detail view keeps its row's position (the rows just fade out)
     var from = z === "detail" ? detail.from : z;
@@ -2407,13 +2749,14 @@
       (z === "controls" ? " controls-open" : "");
     // Browsing anything but the app row pauses the rotation; title rows show the focused title
     holdBackground = z !== "apps";
-    $("hero-btn").className = "hero-btn glass" + (z === "hero" ? " focused" : "");
+    renderHeroButtons(z);
     $("profile").className = "profile glass" + ((z === "top" && topFocus === "profile") || z === "profiles" ? " focused" : "");
+    renderIncognito(z === "top" && topFocus === "incognito");
     $("search-btn").className = "search-btn glass" + (z === "top" && topFocus === "search" ? " focused" : "");
     var onControls = (z === "top" && topFocus === "controls") || z === "controls";
     $("controls-btn").className = "controls-btn glass" + (onControls ? " focused" : "");
     $("controls-label").className = "controls-label" + (z === "top" && topFocus === "controls" ? " show" : "");
-    if (cells[current]) cells[current].className = "cell" + (z === "apps" ? " focused" : "");
+    if (cells[current]) cells[current].className = "cell" + (z === "apps" ? " focused" : "") + (cells[current] === loadingCell ? " loading" : "");
     // the row in use (a detail view or the grid count as their row), for image loading
     var at = ROW_ZONES.indexOf(z === "detail" ? detail.from : z === "browse" ? browse.from : z);
     ROW_ZONES.forEach(function (rz, i) {
@@ -2430,7 +2773,20 @@
     var savable = !!(currentBg && currentBg.tmdbId);
     $("hero").className = "hero" + (savable ? " can-save" : "");
     $("hero-btn").textContent = savable && isSaved(currentBg.id) ? "✓ In Watch Later" : "+ Watch Later";
+    renderHeroButtons(zone);
     if (!savable && zone === "hero") setZone("apps");
+  }
+  // The hero's buttons: "+ Watch Later", thumbs up, thumbs down (heroFocus: which has focus)
+  var heroFocus = 0;
+  function renderHeroButtons(z) {
+    var rating = currentBg && currentBg.tmdbId ? window.ZEN_TITLES.ratingOf(profile, currentBg.id) : 0;
+    $("hero-btn").className = "hero-btn glass" + (z === "hero" && heroFocus === 0 ? " focused" : "");
+    [["hero-up", 1], ["hero-down", -1]].forEach(function (b, i) {
+      var el = $(b[0]);
+      if (!el.firstChild && THUMB_SVG) el.innerHTML = THUMB_SVG;
+      el.className = "hero-btn thumb glass" + (b[1] < 0 ? " down" : "") + (rating === b[1] ? " on" : "") +
+        (z === "hero" && heroFocus === i + 1 ? " focused" : "");
+    });
   }
 
   rememberSaved(readLater());
@@ -2462,7 +2818,7 @@
     var k = e.keyCode;
     if (!isTizen && (k === 27 || k === 8)) k = 10009; // browser preview: Escape / Backspace act as Back
     if (k === 37 || k === 38 || k === 39 || k === 40 || k === 13 || k === 10009) e.preventDefault();
-    if (k === 10009 && opening) { cancelLaunch(); return; }
+    if (k === 10009 && opening && pulseShown()) { cancelLaunch(); return; }
     if (k === 13) {
       var now = Date.now(), repeat = okDown && now - lastOkAt < OK_REPEAT_MS;
       lastOkAt = now;
@@ -2485,28 +2841,43 @@
     } else if (zone === "apps") {
       if (k === 37) focus(current - 1);
       else if (k === 39) focus(current + 1);
-      else if (k === 38) setZone(currentBg && currentBg.tmdbId ? "hero" : "top");
-      else if (k === 40 && RECOMMENDATIONS) setZone("trend");
+      else if (k === 38) {
+        if (pendingHero) setHero(pendingHero); // its buttons act on the title on screen, not the one before
+        setZone(!incognito && currentBg && currentBg.tmdbId ? "hero" : "top");
+      }
+      else if (k === 40 && RECOMMENDATIONS && nextRow(-1, 1)) setZone(nextRow(-1, 1));
       else if (k === 13) launch();
     } else if (zone === "hero") {
       if (k === 40 || k === 10009) setZone("apps");
       else if (k === 38) setZone("top");
-      else if (k === 13) toggleSaved(currentBg);
+      else if (k === 37 || k === 39) { heroFocus = Math.max(0, Math.min(2, heroFocus + (k === 39 ? 1 : -1))); renderHeroButtons(zone); }
+      else if (k === 13 && heroFocus === 0) toggleSaved(currentBg);
+      else if (k === 13) {
+        var r = heroFocus === 1 ? 1 : -1;
+        rateTitle(currentBg, window.ZEN_TITLES.ratingOf(profile, currentBg.id) === r ? 0 : r);
+        renderHeroButtons(zone);
+      }
     } else if (zone === "top") {
       if (k === 37 || k === 39) {
-        var t = TOP_ORDER.indexOf(topFocus) + (k === 39 ? 1 : -1);
-        topFocus = TOP_ORDER[Math.max(0, Math.min(TOP_ORDER.length - 1, t))];
+        var order = topOrder(), t = order.indexOf(topFocus) + (k === 39 ? 1 : -1);
+        topFocus = order[Math.max(0, Math.min(order.length - 1, t))];
         setZone("top");
       }
       else if (k === 40 || k === 10009) setZone("apps");
       else if (k === 13 && topFocus === "search") openSearch();
       else if (k === 13 && topFocus === "controls") openControls();
+      else if (k === 13 && topFocus === "incognito") toggleIncognito();
       else if (k === 13) { menuIndex = profileIds.indexOf(profile.id); renderProfileMenu(); setZone("profiles"); }
     } else if (zone === "profiles") {
       if (k === 38 || k === 40) {
-        menuIndex = Math.max(0, Math.min(profileIds.length - 1, menuIndex + (k === 40 ? 1 : -1)));
+        menuIndex = Math.max(0, Math.min(profileIds.length + THEMES.length - 1, menuIndex + (k === 40 ? 1 : -1)));
         renderProfileMenu();
       } else if (k === 10009 || k === 37) setZone("top");
+      else if (k === 13 && menuIndex >= profileIds.length) {
+        // a theme: restyles at once, and the menu stays open to try another
+        setTheme(THEMES[menuIndex - profileIds.length].id);
+        renderProfileMenu();
+      }
       else if (k === 13) {
         if (profileIds[menuIndex] === profile.id) setZone("top");
         else switchProfile(profileIds[menuIndex]);
@@ -2555,8 +2926,8 @@
       if (k === 37) row.focus(row.current - 1);
       else if (k === 39) row.focus(row.current + 1);
       else if (k === 10009) setZone("apps");
-      else if (k === 38) setZone(at > 0 ? ROW_ZONES[at - 1] : "apps");
-      else if (k === 40 && at < ROW_ZONES.length - 1) setZone(ROW_ZONES[at + 1]);
+      else if (k === 38) setZone(nextRow(at, -1) || "apps");
+      else if (k === 40 && nextRow(at, 1)) setZone(nextRow(at, 1));
       else if (k === 13) openDetail(row, zone);
     }
     if (k === 78 && !isTizen) showNext(); // N: next background (browser preview only)

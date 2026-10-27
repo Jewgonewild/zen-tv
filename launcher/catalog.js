@@ -13,7 +13,7 @@ window.ZEN_CATALOG = {
     netflix:   { name: "Netflix",     store: "11101200001",   ids: ["org.tizen.netflix-app"], providers: [8, 1796] },
     youtube:   { name: "YouTube",     store: "111299001912",  ids: ["9Ur5IzDKqV.TizenYouTube"], providers: [] },
     prime:     { name: "Prime Video", store: "3201512006785", ids: ["evKhCgZelL.AmazonIgnitionLauncher2"], providers: [9, 119, 2100] },
-    youtubetv: { name: "YouTube TV",  store: "3201707014489", ids: [], providers: [] },
+    youtubetv: { name: "YouTube TV",  store: "3201707014489", ids: ["com.samsung.tv.cobalt-yttv"], providers: [] },
     appletv:   { name: "Apple TV",    store: "3201807016597", ids: ["com.samsung.tv.aria-video"], providers: [350] },
     paramount: { name: "Paramount+",  store: "3201710014981", ids: ["rJyOSqC6Up.CBSAllAccess"], providers: [531, 2303, 2616] },
     espn:      { name: "ESPN",        store: "3201708014618", ids: ["XtU8fQk2gN.ESPN"], providers: [] },
